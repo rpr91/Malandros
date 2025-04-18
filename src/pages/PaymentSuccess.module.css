@@ -1,0 +1,30 @@
+.successContainer {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 24px;
+  text-align: center;
+  background-color: #f6ffed;
+  border: 1px solid #b7eb8f;
+  border-radius: 8px;
+}
+
+.successIcon {
+  font-size: 48px;
+  color: #52c41a;
+  margin-bottom: 24px;
+}
+
+.successTitle {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #52c41a;
+}
+
+.successMessage {
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+.actions {
+  margin-top: 24px;
+}

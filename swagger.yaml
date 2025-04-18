@@ -1,0 +1,603 @@
+openapi: 3.0.0
+info:
+  title: Food Ordering API
+  version: v1
+  description: REST API for a food ordering application (MVP) - including Admin Endpoints.
+
+servers:
+  - url: http://localhost:8080/api/v1 # Adjust as needed
+
+components:
+  schemas:
+    MenuItem: # Reused for both customer and admin menu endpoints
+      type: object
+      properties:
+        itemId:
+          type: string
+          description: Unique identifier for the menu item.
+        name:
+          type: string
+          description: Name of the menu item.
+        description:
+          type: string
+          description: Description of the menu item.
+        category:
+          type: string
+          description: Category of the menu item.
+        price:
+          type: number
+          format: float
+          description: Price of the menu item.
+        imageUrl:
+          type: string
+          description: URL of the menu item image.
+
+    Menu: # Reused for customer and admin menu lists
+      type: object
+      properties:
+        menu:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuItem'
+
+    CategoryList: # Reused
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            type: string
+
+    CartItem: # Reused
+      type: object
+      properties:
+        itemId:
+          type: string
+          description: ID of the item.
+        name:
+          type: string
+          description: Name of the item (optional, could be fetched from menu).
+        quantity:
+          type: integer
+          description: Quantity of the item in the cart.
+        price:
+          type: number
+          format: float
+          description: Price of the item (optional, could be fetched from menu).
+
+    Cart: # Reused
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        total:
+          type: number
+          format: float
+          description: Total price of items in the cart.
+
+    OrderCreateRequest: # Reused
+      type: object
+      properties:
+        deliveryAddress:
+          type: string
+          description: Delivery address for the order.
+        paymentMethod:
+          type: string
+          description: Payment method used for the order.
+
+    OrderDetails: # Reused for customer and admin order details
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: Unique identifier for the order.
+        orderDate:
+          type: string
+          format: date-time
+          description: Date and time when the order was placed.
+        orderStatus:
+          type: string
+          description: Status of the order (e.g., Pending, Processing, Delivered).
+        deliveryAddress:
+          type: string
+          description: Delivery address.
+        paymentMethod:
+          type: string
+          description: Payment method.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem' # Reusing CartItem schema for order items
+        total:
+          type: number
+          format: float
+          description: Total order amount.
+
+    OrderHistory: # Reused
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            type: object
+            properties:
+              orderId:
+                type: string
+                description: Order ID.
+              orderDate:
+                type: string
+                format: date-time
+                description: Order date and time.
+              orderStatus:
+                type: string
+                description: Order status.
+              total:
+                type: number
+                format: float
+                description: Order total.
+
+    AdminOrderList: # Schema for admin order list response
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            type: object
+            properties:
+              orderId:
+                type: string
+                description: Order ID.
+              orderDate:
+                type: string
+                format: date-time
+                description: Order date and time.
+              orderStatus:
+                type: string
+                description: Order status.
+              total:
+                type: number
+                format: float
+                description: Order total.
+              customerName: # Optional - could add more customer info
+                type: string
+                description: Customer name (optional for admin list)
+
+    UserRegisterRequest: # Reused
+      type: object
+      properties:
+        username:
+          type: string
+          description: Username for registration.
+        password:
+          type: string
+          description: Password for registration.
+        email:
+          type: string
+          format: email
+          description: Email address for registration.
+
+    UserLoginRequest: # Reused
+      type: object
+      properties:
+        username:
+          type: string
+          description: Username for login.
+        password:
+          type: string
+          description: Password for login.
+
+    AdminLoginRequest: # Schema for admin login request
+      type: object
+      properties:
+        username:
+          type: string
+          description: Admin username for login.
+        password:
+          type: string
+          description: Admin password for login.
+
+    AuthResponse: # Reused - Generic success message
+      type: object
+      properties:
+        message:
+          type: string
+          description: Status message.
+
+    LoginResponse: # Reused - Customer login response
+      type: object
+      properties:
+        message:
+          type: string
+          description: Status message.
+        token:
+          type: string
+          description: Authentication token.
+
+    AdminLoginResponse: # Schema for Admin login response - separate token
+      type: object
+      properties:
+        message:
+          type: string
+          description: Status message.
+        token:
+          type: string
+          description: Admin authentication token.
+
+
+paths:
+  /menu: # Customer Menu Endpoints
+    get:
+      summary: Get the full menu for customers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Menu'
+
+  /menu/categories: # Customer Menu Categories Endpoint
+    get:
+      summary: Get all menu categories for customers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryList'
+
+  /menu/categories/{categoryName}: # Customer Menu Items by Category Endpoint
+    get:
+      summary: Get menu items by category for customers
+      parameters:
+        - in: path
+          name: categoryName
+          required: true
+          schema:
+            type: string
+          description: Category name
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Menu' # Reusing Menu schema, could create a MenuItems schema if needed
+
+  /cart: # Customer Cart Endpoints
+    get:
+      summary: View current user's cart
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+    delete:
+      summary: Clear the entire cart
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse' # Generic success message response
+
+  /cart/items: # Customer Cart Items Endpoints
+    post:
+      summary: Add item to cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                itemId:
+                  type: string
+                quantity:
+                  type: integer
+      responses:
+        '201':
+          description: Item added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse' # Generic success message response
+
+  /cart/items/{itemId}: # Customer Cart Item Manipulation Endpoints
+    put:
+      summary: Update cart item quantity
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+          description: Item ID to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+      responses:
+        '200':
+          description: Quantity updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse' # Generic success message response
+    delete:
+      summary: Remove item from cart
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+          description: Item ID to remove
+      responses:
+        '200':
+          description: Item removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse' # Generic success message response
+
+  /orders: # Customer Order Endpoints
+    post:
+      summary: Create a new order (checkout)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse' # Generic success message response
+    get:
+      summary: Get order history for the user
+      responses:
+        '200':
+          description: Successful response with order history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderHistory'
+
+  /orders/{orderId}: # Customer Order Details Endpoint
+    get:
+      summary: Get details of a specific order
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+          description: Order ID
+      responses:
+        '200':
+          description: Successful response with order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetails'
+
+  /auth/register: # Customer Auth Endpoints
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse' # Generic success message response
+
+  /auth/login: # Customer Auth Endpoints
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+  /auth/logout: # Customer Auth Endpoints
+    post:
+      summary: User logout
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse' # Generic success message response
+
+  /admin/menu: # Admin Menu Management Endpoints
+    get:
+      summary: Get all menu items (Admin)
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object # Inline schema for clarity in this specific context
+                properties:
+                  menuItems:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MenuItem'
+    post:
+      summary: Create a new menu item (Admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItem' # Reusing MenuItem schema for request
+      responses:
+        '201':
+          description: Menu item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse' # Generic success message response
+
+  /admin/menu/{itemId}: # Admin Menu Item Manipulation Endpoints
+    get:
+      summary: Get menu item details (Admin)
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+          description: Item ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+    put:
+      summary: Update menu item (Admin)
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+          description: Item ID to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItem' # Reusing MenuItem schema for request
+      responses:
+        '200':
+          description: Menu item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse' # Generic success message response
+    delete:
+      summary: Delete menu item (Admin)
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+          description: Item ID to delete
+      responses:
+        '200':
+          description: Menu item deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse' # Generic success message response
+
+  /admin/orders: # Admin Order Management Endpoints
+    get:
+      summary: Get all orders (Admin)
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminOrderList' # Using AdminOrderList schema
+
+  /admin/orders/{orderId}: # Admin Order Details Endpoint
+    get:
+      summary: Get order details (Admin)
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+          description: Order ID
+      responses:
+        '200':
+          description: Successful response with order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetails' # Reusing OrderDetails schema
+
+  /admin/orders/{orderId}/status: # Admin Update Order Status Endpoint
+    put:
+      summary: Update order status (Admin)
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+          description: Order ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderStatus:
+                  type: string
+                  description: New order status
+      responses:
+        '200':
+          description: Order status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse' # Generic success message response
+
+  /admin/auth/login: # Admin Auth Endpoint
+    post:
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLoginRequest'
+      responses:
+        '200':
+          description: Admin login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminLoginResponse'

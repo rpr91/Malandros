@@ -1,0 +1,151 @@
+.cartContainer {
+  padding: 0.5rem;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.cartTitle {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+.emptyCart {
+  color: #666;
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.cartItems {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cartItem {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+  gap: 0.5rem;
+}
+
+.itemInfo {
+  flex: 1;
+}
+
+.itemName {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.itemPrice {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.itemControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.quantityButton {
+  background: #f0f0f0;
+  border: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quantityButton:hover {
+  background: #e0e0e0;
+}
+
+.itemQuantity {
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.removeButton {
+  background: #ffebee;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #c62828;
+  font-size: 0.8rem;
+  flex: 1;
+  text-align: center;
+}
+
+.removeButton:hover {
+  background: #ffcdd2;
+}
+
+.itemTotal {
+  text-align: right;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.cartTotal {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+  border-top: 2px solid #333;
+  margin-top: 0.75rem;
+}
+
+/* Tablet styles */
+@media (min-width: 768px) {
+  .cartContainer {
+    padding: 1rem;
+    max-width: 800px;
+  }
+
+  .cartTitle {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .emptyCart {
+    padding: 2rem 0;
+    font-size: 1rem;
+  }
+
+  .cartItem {
+    flex-direction: row;
+    padding: 1rem 0;
+  }
+
+  .itemName {
+    font-size: 1rem;
+  }
+
+  .itemPrice {
+    font-size: 0.9rem;
+  }
+
+  .removeButton {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .cartTotal {
+    font-size: 1.2rem;
+    padding: 1rem 0;
+    margin-top: 1rem;
+  }
+}

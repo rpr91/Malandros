@@ -1,0 +1,6 @@
+/* GuestCheckoutButton specific styles */
+/* Using same styling as other auth buttons for consistency */
+.button {
+  margin-top: 16px;
+  width: 100%;
+}

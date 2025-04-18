@@ -1,0 +1,31 @@
+.searchContainer {
+  padding: 0.5rem;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+  min-height: 2.5rem;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+}
+
+/* Tablet styles */
+@media (min-width: 768px) {
+  .searchContainer {
+    padding: 1rem;
+  }
+
+  .searchInput {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+}
