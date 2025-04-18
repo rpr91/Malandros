@@ -1,7 +1,7 @@
-import { useStore } from './useStore';
+import { appStore } from './useStore';
 
 export const useCartStore = () => {
-  return useStore((state) => ({
+  return appStore((state) => ({
     items: state.items,
     addToCart: state.addToCart,
     increaseQuantity: state.increaseQuantity,
@@ -9,3 +9,5 @@ export const useCartStore = () => {
     removeItemFromCart: state.removeItemFromCart
   }));
 };
+
+export { appStore };

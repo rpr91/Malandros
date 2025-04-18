@@ -35,7 +35,7 @@ const PaymentSuccess: React.FC = () => {
         // Clear cart only if payment is confirmed successful
         if (status.status === 'succeeded') {
           items.forEach(item => {
-            removeItemFromCart(item.itemId);
+            removeItemFromCart(item.id);
           });
         }
       } catch (err) {

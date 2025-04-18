@@ -118,7 +118,7 @@ export const CartView = () => {
         <>
           <ul className={styles.cartItems}>
             {items.map((item) => (
-              <li key={item.itemId} className={styles.cartItem}>
+              <li key={item.id} className={styles.cartItem}>
                 <div className={styles.itemInfo}>
                   <span className={styles.itemName}>{item.name}</span>
                   <span className={styles.itemPrice}>${item.price.toFixed(2)}</span>
@@ -126,7 +126,7 @@ export const CartView = () => {
                 <div className={styles.itemControls}>
                   <button 
                     className={styles.quantityButton}
-                    onClick={() => decreaseQuantity(item.itemId)}
+                    onClick={() => decreaseQuantity(item.id)}
                     aria-label="Decrease quantity"
                   >
                     -
@@ -134,14 +134,14 @@ export const CartView = () => {
                   <span className={styles.itemQuantity}>{item.quantity}</span>
                   <button 
                     className={styles.quantityButton}
-                    onClick={() => increaseQuantity(item.itemId)}
+                    onClick={() => increaseQuantity(item.id)}
                     aria-label="Increase quantity"
                   >
                     +
                   </button>
                   <button 
                     className={styles.removeButton}
-                    onClick={() => removeItemFromCart(item.itemId)}
+                    onClick={() => removeItemFromCart(item.id)}
                     aria-label="Remove item"
                   >
                     Remove

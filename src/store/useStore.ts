@@ -17,7 +17,7 @@ interface AuthState {
 
 // Cart slice
 export interface CartItem {
-  itemId: string;
+  id: string;
   name: string;
   price: number;
   quantity: number;
@@ -29,9 +29,10 @@ interface CartState {
   increaseQuantity: (itemId: string) => void;
   decreaseQuantity: (itemId: string) => void;
   removeItemFromCart: (itemId: string) => void;
+  clearCart: () => void;
 }
 
-export const useStore = create<AuthState & CartState>()(
+export const appStore = create<AuthState & CartState>()(
   persist(
     (set) => ({
       // Auth state
@@ -52,38 +53,39 @@ export const useStore = create<AuthState & CartState>()(
       items: [],
       addToCart: (item) => 
         set((state) => {
-          const existingItem = state.items.find((i) => i.itemId === item.itemId);
+          const existingItem = state.items.find((i) => i.id === item.id);
           if (existingItem) {
             return {
-              items: state.items.map((i) => 
-                i.itemId === item.itemId 
-                  ? { ...i, quantity: i.quantity + 1 } 
+              items: state.items.map((i) =>
+                i.id === item.id
+                  ? { ...i, quantity: i.quantity + 1 }
                   : i
               )
             };
           }
           return { items: [...state.items, { ...item, quantity: 1 }] };
         }),
-      increaseQuantity: (itemId) => 
+      increaseQuantity: (id) =>
         set((state) => ({
-          items: state.items.map((item) => 
-            item.itemId === itemId 
-              ? { ...item, quantity: item.quantity + 1 } 
+          items: state.items.map((item) =>
+            item.id === id
+              ? { ...item, quantity: item.quantity + 1 }
               : item
           )
         })),
-      decreaseQuantity: (itemId) => 
+      decreaseQuantity: (id) =>
         set((state) => ({
-          items: state.items.map((item) => 
-            item.itemId === itemId 
-              ? { ...item, quantity: Math.max(1, item.quantity - 1) } 
+          items: state.items.map((item) =>
+            item.id === id
+              ? { ...item, quantity: Math.max(1, item.quantity - 1) }
               : item
           )
         })),
-      removeItemFromCart: (itemId) => 
+      removeItemFromCart: (id) =>
         set((state) => ({
-          items: state.items.filter((item) => item.itemId !== itemId)
-        }))
+          items: state.items.filter((item) => item.id !== id)
+        })),
+      clearCart: () => set({ items: [] })
     }),
     {
       name: 'app-storage',
